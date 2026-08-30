@@ -47,7 +47,6 @@ public class DevicesController(IDeviceService deviceService) : ControllerBase
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAll([FromQuery] GetAllDevicesRequest request)
     {
-        //TODO comment about pagination improvments section
         GetAllDevicesResponse response = await deviceService.GetAllDevicesAsync(request);
 
         return Ok(response);

@@ -1,4 +1,5 @@
 ﻿using DeviceManagement.Application.Interfaces;
+using DeviceManagement.Application.Mappers;
 using DeviceManagement.Application.UseCases.CreateDevice;
 using DeviceManagement.Application.UseCases.DeleteDevice;
 using DeviceManagement.Application.UseCases.GetAllDevice;
@@ -21,7 +22,7 @@ public class DeviceService : IDeviceService
 
     public async Task<Device> CreateDeviceAsync(CreateDeviceRequest request)
     {
-        var device = new Device(request.Name, request.Brand);
+        Device device = new (request.Name, request.Brand);
 
         await _repository.AddAsync(device);
 
@@ -32,41 +33,22 @@ public class DeviceService : IDeviceService
     {
         IEnumerable<Device> devices = await _repository.GetAllAsync(request.Brand, request.State);
 
-        //TODO mudar para mapper (AutoMapper) para mapear a entidade para o DTO de resposta.
         return new GetAllDevicesResponse
         {
-            Devices = devices.Select(device => new GetByIdDeviceResponse
-            {
-                Id = device.Id,
-                Name = device.Name,
-                Brand = device.Brand,
-                State = device.State,
-                CreatedAt = device.CreatedAt
-            })
+            Devices = devices.ToResponseList()
         };
     }
 
     public async Task<GetByIdDeviceResponse> GetByIdDeviceAsync(GetByIdDeviceRequest request)
     {
-        //TODO criar custom exception (NotFoundException) 
-        // capturar por um middleware global para retornar um HTTP 404.
         Device device = await _repository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
 
-        //TODO mudar para mapper (AutoMapper) para mapear a entidade para o DTO de resposta.
-        return new GetByIdDeviceResponse
-        {
-            Id = device.Id,
-            Name = device.Name,
-            Brand = device.Brand,
-            State = device.State,
-            CreatedAt = device.CreatedAt
-        };
+        return device.ToResponse();
+
     }
 
     public async Task<GetByIdDeviceResponse> UpdateDeviceAsync(UpdateDeviceRequest request)
     {
-        //TODO adicionar validação guid valido.
-        //TODO add updatedat
         Device device = await _repository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
 
         if (request.State.HasValue)
@@ -76,24 +58,11 @@ public class DeviceService : IDeviceService
 
         await _repository.UpdateAsync(device);
 
-        //TODO hasdetailschanged para comparar no banco com os dados que mudaram
-
-        //TODO mudar para mapper (AutoMapper) para mapear a entidade para o DTO de resposta.
-        return new GetByIdDeviceResponse
-        {
-            Id = device.Id,
-            Name = device.Name,
-            Brand = device.Brand,
-            State = device.State,
-            CreatedAt = device.CreatedAt
-        };
+        return device.ToResponse();
     }
 
     public async Task DeleteDeviceAsync(DeleteDeviceRequest request)
     {
-        //TODO adicionar validação guid valido.
-
-        //TODO tratar erro - ver no middleware
         var device = await _repository.GetByIdAsync(request.Id);
 
         if (device == null)

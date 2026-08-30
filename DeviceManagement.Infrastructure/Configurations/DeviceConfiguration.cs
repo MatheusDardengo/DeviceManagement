@@ -25,5 +25,7 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
         builder.Property(d => d.CreatedAt)
             .IsRequired()
             .ValueGeneratedNever();
+
+        builder.Property(d => d.UpdatedAt);
     }
 }

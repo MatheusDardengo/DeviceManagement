@@ -9,6 +9,7 @@ public class Device
     public string Brand { get; private set; }
     public DeviceState State { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
     public Device(string name, string brand)
     {
@@ -27,7 +28,7 @@ public class Device
 
     public void UpdateDetails(string? name, string? brand)
     {
-        if (State == DeviceState.InUse)
+        if (HasDetailsChanged(name, brand) && State == DeviceState.InUse)
             throw new InvalidOperationException("Name and Brand cannot be updated when the device is in use.");
 
         if (!string.IsNullOrWhiteSpace(name))
@@ -35,11 +36,19 @@ public class Device
 
         if (!string.IsNullOrWhiteSpace(brand))
             Brand = brand;
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool HasDetailsChanged(string? name, string? brand)
+    {
+        return ((!string.IsNullOrWhiteSpace(name) && Name != name ) || (!string.IsNullOrWhiteSpace(brand) && Brand != brand));
     }
 
     public void UpdateState(DeviceState newState)
     {
         State = newState;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void ValidateDeletion()

@@ -1,4 +1,5 @@
 using DeviceManagement.Api.Filters;
+using DeviceManagement.Api.Middlewares;
 using DeviceManagement.Application.Interfaces;
 using DeviceManagement.Application.Services;
 using DeviceManagement.Application.UseCases.CreateDevice;
@@ -28,6 +29,8 @@ builder.Services.AddControllers(options =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

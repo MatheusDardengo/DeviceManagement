@@ -17,26 +17,13 @@ namespace DeviceManagement.Tests.Application;
 public class DeviceServiceTests
 {
     private readonly Mock<IDeviceRepository> _repositoryMock;
-    private readonly Mock<IValidator<CreateDeviceRequest>> _createValidatorMock;
-    private readonly Mock<IValidator<GetByIdDeviceRequest>> _getByIdValidatorMock;
-    private readonly Mock<IValidator<UpdateDeviceRequest>> _updateValidatorMock;
-    private readonly Mock<IValidator<GetAllDevicesRequest>> _getAllValidatorMock;
     private readonly DeviceService _service;
 
     public DeviceServiceTests()
     {
         _repositoryMock = new Mock<IDeviceRepository>();
-        _createValidatorMock = new Mock<IValidator<CreateDeviceRequest>>();
-        _getByIdValidatorMock = new Mock<IValidator<GetByIdDeviceRequest>>();
-        _updateValidatorMock = new Mock<IValidator<UpdateDeviceRequest>>();
-        _getAllValidatorMock = new Mock<IValidator<GetAllDevicesRequest>>();
 
-        _service = new DeviceService(
-            _repositoryMock.Object,
-            _createValidatorMock.Object,
-            _getByIdValidatorMock.Object,
-            _updateValidatorMock.Object,
-            _getAllValidatorMock.Object);
+        _service = new DeviceService(_repositoryMock.Object);
     }
 
     // -------------------------------------------------------------------------
@@ -48,10 +35,6 @@ public class DeviceServiceTests
     {
         // Arrange
         var request = new CreateDeviceRequest { Name = "DeviceTest", Brand = "Apple" };
-
-        _createValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
 
         _repositoryMock.Setup(r => r.AddAsync(It.IsAny<Device>()));
         _repositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
@@ -68,25 +51,6 @@ public class DeviceServiceTests
         _repositoryMock.Verify(r => r.AddAsync(It.IsAny<Device>()), Times.Once);
     }
 
-    [Fact]
-    public async Task CreateDeviceAsync_Should_ThrowValidationException_When_RequestIsInvalid()
-    {
-        // Arrange
-        var request = new CreateDeviceRequest { Name = "", Brand = "" };
-        var failures = new List<ValidationFailure> { new("Name", "Name is required.") };
-
-        _createValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult(failures));
-
-        // Act
-        Func<Task> act = async () => await _service.CreateDeviceAsync(request);
-
-        // Assert
-        await act.Should().ThrowAsync<ValidationException>();
-        _repositoryMock.Verify(r => r.AddAsync(It.IsAny<Device>()), Times.Never);
-    }
-
     // -------------------------------------------------------------------------
     // GetByIdDeviceAsync
     // -------------------------------------------------------------------------
@@ -97,10 +61,6 @@ public class DeviceServiceTests
         // Arrange
         var device = new Device("Monitor", "Samsung");
         var request = new GetByIdDeviceRequest { Id = device.Id };
-
-        _getByIdValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
 
         _repositoryMock.Setup(r => r.GetByIdAsync(device.Id)).ReturnsAsync(device);
 
@@ -120,10 +80,6 @@ public class DeviceServiceTests
         // Arrange
         var request = new GetByIdDeviceRequest { Id = Guid.NewGuid() };
 
-        _getByIdValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
-
         _repositoryMock.Setup(r => r.GetByIdAsync(request.Id)).ReturnsAsync((Device?)null);
 
         // Act
@@ -132,24 +88,6 @@ public class DeviceServiceTests
         // Assert
         await act.Should().ThrowAsync<KeyNotFoundException>()
             .WithMessage($"Device with ID {request.Id} not found.");
-    }
-
-    [Fact]
-    public async Task GetByIdDeviceAsync_Should_ThrowValidationException_When_RequestIsInvalid()
-    {
-        // Arrange
-        var request = new GetByIdDeviceRequest { Id = Guid.Empty };
-        var failures = new List<ValidationFailure> { new("Id", "Id is required.") };
-
-        _getByIdValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult(failures));
-
-        // Act
-        Func<Task> act = async () => await _service.GetByIdDeviceAsync(request);
-
-        // Assert
-        await act.Should().ThrowAsync<ValidationException>();
     }
 
     // -------------------------------------------------------------------------
@@ -162,10 +100,6 @@ public class DeviceServiceTests
         // Arrange
         var request = new GetAllDevicesRequest();
         var devices = new List<Device> { new("Phone", "Apple"), new("Tablet", "Samsung") };
-
-        _getAllValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
 
         _repositoryMock.Setup(r => r.GetAllAsync(null, null)).ReturnsAsync(devices);
 
@@ -181,10 +115,6 @@ public class DeviceServiceTests
     {
         // Arrange
         var request = new GetAllDevicesRequest { Brand = "Unknown" };
-
-        _getAllValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
 
         _repositoryMock.Setup(r => r.GetAllAsync("Unknown", null)).ReturnsAsync([]);
 
@@ -206,10 +136,6 @@ public class DeviceServiceTests
         var device = new Device("OldName", "OldBrand");
         var request = new UpdateDeviceRequest { Id = device.Id, Name = "NewName", Brand = "NewBrand" };
 
-        _updateValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
-
         _repositoryMock.Setup(r => r.GetByIdAsync(device.Id)).ReturnsAsync(device);
         _repositoryMock.Setup(r => r.UpdateAsync(device)).Returns(Task.CompletedTask);
         _repositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
@@ -229,10 +155,6 @@ public class DeviceServiceTests
         // Arrange
         var request = new UpdateDeviceRequest { Id = Guid.NewGuid(), Name = "Name", Brand = "Brand" };
 
-        _updateValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
-
         _repositoryMock.Setup(r => r.GetByIdAsync(request.Id)).ReturnsAsync((Device?)null);
 
         // Act
@@ -251,10 +173,6 @@ public class DeviceServiceTests
         device.UpdateState(DeviceState.InUse);
 
         var request = new UpdateDeviceRequest { Id = device.Id, Name = "NewName", Brand = "NewBrand" };
-
-        _updateValidatorMock
-            .Setup(v => v.ValidateAsync(request, default))
-            .ReturnsAsync(new ValidationResult());
 
         _repositoryMock.Setup(r => r.GetByIdAsync(device.Id)).ReturnsAsync(device);
 

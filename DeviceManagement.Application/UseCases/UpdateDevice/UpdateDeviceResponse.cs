@@ -1,14 +1,12 @@
 ﻿using DeviceManagement.Domain.Enums;
-using System.Text.Json.Serialization;
 
-namespace DeviceManagement.Application.UseCases.GetByIdDevice;
+namespace DeviceManagement.Application.UseCases.UpdateDevice;
 
-public class GetByIdDeviceResponse
+public class UpdateDeviceResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Brand { get; set; } = string.Empty;
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public DeviceState State { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

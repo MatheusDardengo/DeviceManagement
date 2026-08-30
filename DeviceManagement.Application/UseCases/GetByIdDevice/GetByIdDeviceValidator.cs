@@ -7,7 +7,6 @@ public class GetByIdDeviceValidator : AbstractValidator<GetByIdDeviceRequest>
     public GetByIdDeviceValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Device ID is required.")
-            .Must(id => Guid.TryParse(id.ToString(), out _)).WithMessage("Invalid Device ID format.");
+            .NotEmpty().WithMessage("Device ID is required.");
     }
 }
