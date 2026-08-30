@@ -28,19 +28,13 @@ public class Device
     public void UpdateDetails(string? name, string? brand)
     {
         if (State == DeviceState.InUse)
-        {
-            throw new InvalidOperationException("Name and brand cannot be updated when the device is in use.");
-        }
+            throw new InvalidOperationException("Name and Brand cannot be updated when the device is in use.");
 
-        //TODO review those rules
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+        if (!string.IsNullOrWhiteSpace(name))
+            Name = name;
 
-        if (string.IsNullOrWhiteSpace(brand))
-            throw new ArgumentException("Brand cannot be null or empty.", nameof(brand));
-
-        Name = name;
-        Brand = brand;
+        if (!string.IsNullOrWhiteSpace(brand))
+            Brand = brand;
     }
 
     public void UpdateState(DeviceState newState)

@@ -5,6 +5,7 @@ using DeviceManagement.Application.UseCases.GetAllDevice;
 using DeviceManagement.Application.UseCases.GetByIdDevice;
 using DeviceManagement.Application.UseCases.UpdateDevice;
 using DeviceManagement.Domain.Entities;
+using DeviceManagement.Domain.Enums;
 using DeviceManagement.Domain.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
@@ -15,7 +16,7 @@ public class DeviceService : IDeviceService
 {
     private readonly IDeviceRepository _repository;
 
-    //TODO trocar N validators
+    //TODO Deixar no middleware
     private readonly IValidator<CreateDeviceRequest> _createValidator;
     private readonly IValidator<GetByIdDeviceRequest> _getByIdValidator;
     private readonly IValidator<UpdateDeviceRequest> _updateValidator;
@@ -37,6 +38,7 @@ public class DeviceService : IDeviceService
 
     public async Task<Device> CreateDeviceAsync(CreateDeviceRequest request)
     {
+        //TODO melhorar o validator, id é um guid?
         ValidationResult validationResult = await _createValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
@@ -47,9 +49,7 @@ public class DeviceService : IDeviceService
 
         var device = new Device(request.Name, request.Brand);
 
-        //TODO rever esse duplo await
         await _repository.AddAsync(device);
-        await _repository.SaveChangesAsync();
 
         return device;
     }
@@ -92,7 +92,7 @@ public class DeviceService : IDeviceService
 
         //TODO criar custom exception (NotFoundException) 
         // capturar por um middleware global para retornar um HTTP 404.
-        var device = await _repository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
+        Device device = await _repository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
 
         //TODO mudar para mapper (AutoMapper) para mapear a entidade para o DTO de resposta.
         return new GetByIdDeviceResponse
@@ -107,23 +107,26 @@ public class DeviceService : IDeviceService
 
     public async Task<GetByIdDeviceResponse> UpdateDeviceAsync(UpdateDeviceRequest request)
     {
+        //TODO add updatedat
+        // melhorar o validator, id é um guid? nao nulo
         ValidationResult validationResult = await _updateValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
             throw new ValidationException(validationResult.Errors);
         }
 
-        var device = await _repository.GetByIdAsync(request.Id);
-        if (device == null)
-        {
-            throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
-        }
+        Device device = await _repository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
+
+        if (request.State.HasValue)
+            device.UpdateState((DeviceState)request.State.Value);
 
         device.UpdateDetails(request.Name, request.Brand);
 
         await _repository.UpdateAsync(device);
-        await _repository.SaveChangesAsync();
 
+        //TODO hasdetailschanged para comparar no banco com os dados que mudaram
+
+        //TODO mudar para mapper (AutoMapper) para mapear a entidade para o DTO de resposta.
         return new GetByIdDeviceResponse
         {
             Id = device.Id,
@@ -136,12 +139,15 @@ public class DeviceService : IDeviceService
 
     public async Task DeleteDeviceAsync(DeleteDeviceRequest request)
     {
+        //TODO tratar erro - ver no middleware
         var device = await _repository.GetByIdAsync(request.Id);
 
         if (device == null)
         {
             throw new KeyNotFoundException($"Device with ID {request.Id} not found.");
         }
+
+        device.ValidateDeletion();
 
         await _repository.DeleteAsync(device);
     }

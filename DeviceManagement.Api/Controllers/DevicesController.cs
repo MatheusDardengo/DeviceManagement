@@ -47,6 +47,7 @@ public class DevicesController(IDeviceService deviceService) : ControllerBase
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAll([FromQuery] GetAllDevicesRequest request)
     {
+        //TODO comment about pagination improvments section
         GetAllDevicesResponse response = await deviceService.GetAllDevicesAsync(request);
 
         return Ok(response);
@@ -74,12 +75,10 @@ public class DevicesController(IDeviceService deviceService) : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDeviceRequest request)
     {
-        // Amarramos o ID da rota no request para a Service saber quem atualizar
         request.Id = id;
 
         var updatedDevice = await deviceService.UpdateDeviceAsync(request);
 
-        // Retorna 200 OK com os novos dados
         return Ok(updatedDevice);
     }
 

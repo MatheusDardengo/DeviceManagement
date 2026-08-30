@@ -1,7 +1,7 @@
 <Solution>
-  <Folder Name="/Solution Items/" />
   <Project Path="DeviceManagement.Api/DeviceManagement.Api.csproj" />
   <Project Path="DeviceManagement.Application/DeviceManagement.Application.csproj" />
   <Project Path="DeviceManagement.Domain/DeviceManagement.Domain.csproj" />
   <Project Path="DeviceManagement.Infrastructure/DeviceManagement.Infrastructure.csproj" Id="cddc4dee-3157-43e5-9c4a-8d7f754652d4" />
+  <Project Path="DeviceManagement.Test/DeviceManagement.Test.csproj" Id="b3f6b976-2fcf-484d-aea9-846f148a29f8" />
 </Solution>

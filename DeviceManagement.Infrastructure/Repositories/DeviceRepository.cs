@@ -18,7 +18,8 @@ public class DeviceRepository : IDeviceRepository
 
     public async Task AddAsync(Device device)
     {
-        await _context.Devices.AddAsync(device);
+        _context.Devices.Add(device);
+        await SaveChangesAsync();
     }
 
     public async Task SaveChangesAsync()
@@ -49,11 +50,15 @@ public class DeviceRepository : IDeviceRepository
         return await query.ToListAsync();
     }
 
-    public Task UpdateAsync(Device device) => throw new NotImplementedException();
+    public async Task UpdateAsync(Device device)
+    {
+        _context.Devices.Update(device);
+        await SaveChangesAsync();
+    }
 
     public async Task DeleteAsync(Device device)
     {
         _context.Devices.Remove(device);
-        await _context.SaveChangesAsync();
+        await SaveChangesAsync();
     }
 }
