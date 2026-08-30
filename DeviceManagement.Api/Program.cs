@@ -1,3 +1,4 @@
+using DeviceManagement.Api.Filters;
 using DeviceManagement.Application.Interfaces;
 using DeviceManagement.Application.Services;
 using DeviceManagement.Application.UseCases.CreateDevice;
@@ -18,7 +19,11 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 
 builder.Services.AddValidatorsFromAssembly(typeof(CreateDeviceRequestValidator).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
