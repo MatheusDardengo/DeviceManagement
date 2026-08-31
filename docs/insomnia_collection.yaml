@@ -1,0 +1,146 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Collection
+meta:
+  id: wrk_2925cc6625564333977b80eeb8a9db26
+  created: 1787914907250
+  modified: 1787914922884
+  description: ""
+collection:
+  - url: http://localhost:8080/devices
+    name: Device
+    meta:
+      id: req_bec0a9a568c1469da2fefbcd52246a6f
+      created: 1787914926390
+      modified: 1788134478436
+      isPrivate: false
+      description: ""
+      sortKey: -1787914926390
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"name": "Iphone X",
+          "brand": "Apple",
+          "status": 0
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/devices
+    name: GetById
+    meta:
+      id: req_165f6b4117ae4613bf7d1735f8a00d46
+      created: 1787927196838
+      modified: 1788134429886
+      isPrivate: false
+      description: ""
+      sortKey: -1787927196838
+    method: GET
+    parameters:
+      - name: Id
+        value: 9c1e7d54-afad-40f6-83ea-5e4b95e3cf04
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/devices/GetAll
+    name: GetAll
+    meta:
+      id: req_7fdbef9d1df34439ad384a518b6cd785
+      created: 1787940557946
+      modified: 1788134373936
+      isPrivate: false
+      description: ""
+      sortKey: -1787940557946
+    method: GET
+    parameters:
+      - name: Brand
+        value: Apple
+        description: ""
+        disabled: false
+      - name: State
+        value: "0"
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://localhost:8080/devices/630e0763-2dd1-4e71-9ae0-6e067084c531
+    name: Delete
+    meta:
+      id: req_2ad53c828f224530beab412f0486c50a
+      created: 1787942759924
+      modified: 1788134491852
+      isPrivate: false
+      description: ""
+      sortKey: -1787942759924
+    method: DELETE
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://localhost:8080/devices/9c1e7d54-afad-40f6-83ea-5e4b95e3cf04
+    name: Update
+    meta:
+      id: req_3db47b79f0ad489e98f2cd7bccd91473
+      created: 1788038013965
+      modified: 1788134497576
+      isPrivate: false
+      description: ""
+      sortKey: -1788038013965
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"state": 0
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_17a45866bb8cb17b9c75395b1e309c83667f054e
+    created: 1787914907252
+    modified: 1787914907252
+environments:
+  name: Base Environment
+  meta:
+    id: env_17a45866bb8cb17b9c75395b1e309c83667f054e
+    created: 1787914907251
+    modified: 1787914907251
+    isPrivate: false
